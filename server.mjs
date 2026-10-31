@@ -136,7 +136,7 @@ async function action(body) {
     if (!/^0x[0-9a-fA-F]*$/.test(tx.inputData || "")) throw new Error("Invalid transaction data");
     const args = ["contract-call", "preview", "--binanceChainId", "56", "--from", tx.from, "--to", tx.to, "--inputData", tx.inputData];
     if (tx.value) args.push("--value", String(tx.value));
-    if (tx.gasLimit) args.push("--gasLimit", String(tx.gasLimit));
+    // 不要透传 gasLimit：baw 预览时会自己估算 gas；透传会触发 “--gasLimit … only supported on EVM chains” 校验报错
     return { result: await runBaw(session.profile, args) };
   }
   if (name === "execute") {
