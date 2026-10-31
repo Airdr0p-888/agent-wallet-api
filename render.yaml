@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: agent-ai-agentic-wallet
+    runtime: docker
+    rootDir: .
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGIN
+        sync: false
+      - key: ALLOWED_TO
+        value: 0xd43b3aafd9147cf75f1c02b9bcdc8677310630fc,0x55d398326f99059fF775485246999027B3197955
