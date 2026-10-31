@@ -24,9 +24,13 @@ function send(res, code, body) {
 }
 
 function cors(req, res) {
-  const origin = String(req.headers.origin || "").replace(/\/$/, "");
-  if (!ORIGIN || origin !== ORIGIN) return false;
-  res.setHeader("access-control-allow-origin", ORIGIN);
+  const list = String(process.env.ALLOWED_ORIGIN || "")
+    .split(",")
+    .map((o) => o.trim().replace(/\/$/, "").toLowerCase())
+    .filter(Boolean);
+  const origin = String(req.headers.origin || "").replace(/\/$/, "").toLowerCase();
+  if (!list.length || !origin || !list.includes(origin)) return false;
+  res.setHeader("access-control-allow-origin", req.headers.origin);
   res.setHeader("vary", "Origin");
   res.setHeader("access-control-allow-methods", "POST, OPTIONS");
   res.setHeader("access-control-allow-headers", "content-type");
@@ -119,7 +123,7 @@ async function action(body) {
     return { result: await runBaw(session.profile, ["auth", "verify", "--qrCodeId", String(body.qrCodeId)], 310_000) };
   }
   if (name === "wallet") {
-    const result = await runBaw(session.profile, ["wallet", "address", "--binanceChainId", "56"]);
+    const result = await runBaw(session.profile, ["wallet", "address"]);
     const address = findAddress(result);
     if (!address) throw new Error("No BSC Agentic Wallet address was returned");
     return { address, result };
